@@ -1,21 +1,3 @@
-let innerDivs = document.querySelectorAll(".innerDiv");
-let spans = document.querySelectorAll("span");
-
-let rowCount = 0;
-let colCount = 0;
-let boxCount = 0;
-for (let span of spans) {
-    if (colCount > 8) {
-        rowCount++;
-        colCount = 0;
-    }
-    //generating unique box count
-    boxCount = Math.floor(rowCount / 3) * 3 + Math.floor(colCount / 3);
-    //adding respective classes
-    span.classList.add(`row${rowCount}`, `col${colCount}`, `box${boxCount}`);
-    colCount++;
-}
-
 let board =
     [
         ["5", "3", ".", ".", "7", ".", ".", ".", "."],
@@ -29,18 +11,28 @@ let board =
         [".", ".", ".", ".", "8", ".", ".", "7", "9"]
     ]
 
-spans = document.querySelectorAll("span");
+let innerDivs = document.querySelectorAll(".innerDiv");
+let spans = document.querySelectorAll("span");
 
-rowCount = 0;
-colCount = 0;
+let rowCount = 0;
+let colCount = 0;
+let boxCount = 0;
 for (let span of spans) {
     if (colCount > 8) {
         rowCount++;
         colCount = 0;
     }
+    //generating unique box count
+    boxCount = Math.floor(rowCount / 3) * 3 + Math.floor(colCount / 3);
     span.textContent = board[rowCount][colCount];
+    //adding respective classes
+    span.classList.add(`row${rowCount}`, `col${colCount}`, `box${boxCount}`);
     colCount++;
 }
+
+
+
+// spans = document.querySelectorAll("span");
 
 //Sudoku solver Algorithm
 
@@ -68,6 +60,53 @@ for (let i = 0; i < 9; i++) {
     }
 }
 
+
+async function sudokuSolver(row, col) {
+    if ((row > 8) || (col > 8)) {
+        return true;
+    }
+    let nextRow = row;
+    let nextCol = col + 1;
+    if (col === 8) {
+        nextRow = row + 1;
+        nextCol = 0;
+    }
+    if (board[row][col] !== ".") {
+        if(sudokuSolver(nextRow, nextCol)) return true;
+        return false;
+    }
+        for(let c='1'; c<='9'; c++){
+            let rowKey = `${uniqChar[row]}${c}`;
+            let colKey = `${uniqChar[col]}${c}`;
+            let boxKey = `${uniqChar[(Math.floor(row / 3) * 3 + Math.floor(col / 3))]}${c}`;
+            if (!rowMap.has(rowKey) && !colMap.has(colKey) && !boxMap.has(boxKey)) {
+                let currentClass = `.row${row}.col${col}`;
+                let currentSpan = document.querySelector(currentClass);
+                board[row][col] = `${c}`;
+                currentSpan.innerText = board[row][col];
+                // console.log("hi");
+                rowMap.set(rowKey, true);
+                colMap.set(colKey, true);
+                boxMap.set(boxKey, true);
+                // await new Promise(resolve => {setTimeout(() => {resolve()}, 100)});
+                if(sudokuSolver(nextRow, nextCol)) return true;
+                else{
+                    rowMap.delete(rowKey);
+                    colMap.delete(colKey);
+                    boxMap.delete(boxKey);
+                    board[row][col] = '.';
+                    currentSpan.innerText = board[row][col];
+                }
+            }
+        }
+        return false;
+}
+
+sudokuSolver(0, 0);
+
+
+//ignore
+/*
 let flag = false;
 async function sudokuSolver(row, col) {
     if ((row > 8) || (col > 8)) {
@@ -99,7 +138,7 @@ async function sudokuSolver(row, col) {
                 colMap.set(colKey, true);
                 boxMap.set(boxKey, true);
                 
-                sudokuSolver(nextRow, nextCol)
+                sudokuSolver(nextRow, nextCol);
                 
                 if (!flag) {
                     rowMap.delete(rowKey);
@@ -117,9 +156,11 @@ async function sudokuSolver(row, col) {
         }
     }
 }
-console.log("before Solved");
-sudokuSolver(0, 0);
-console.log("finished");
+*/
+// console.log("before Solved");
+// sudokuSolver(0, 0);
+// sudokuSolver2();
+// console.log("finished");
 
 // async function last(){for (let i = 0; i < 9; i++) {
 //     for (let j = 0; j < 9; j++) {
@@ -132,4 +173,42 @@ console.log("finished");
 //         }
 //     }
 // }
+// }
+
+
+
+
+// function sudokuSolver2(){
+//     for(let row=0; row<9; row++){
+//         for(let col=0; col<9; col++){
+//             if(board[row][col] == '.'){
+//                 for(let c = '1'; c <= '9'; c++){
+//                     let rowKey = `${uniqChar[row]}${c}`;
+//                     let colKey = `${uniqChar[col]}${c}`;
+//                     let boxKey = `${uniqChar[(Math.floor(row / 3) * 3 + Math.floor(col / 3))]}${c}`;
+//                     if (!rowMap.has(rowKey) && !colMap.has(colKey) && !boxMap.has(boxKey)){
+//                         board[row][col] = c;
+//                         let currentClass = `.row${row}.col${col}`;
+//                         let currentSpan = document.querySelector(currentClass);
+//                         currentSpan.innerText = board[row][col];
+//                         rowMap.set(rowKey, true);
+//                         colMap.set(colKey, true);
+//                         boxMap.set(boxKey, true);
+//                         if(sudokuSolver2()){
+//                             return true;
+//                         }
+//                         else{
+//                             board[row][col]='.';
+//                             currentSpan.innerText = board[row][col];
+//                             rowMap.delete(rowKey);
+//                             colMap.delete(colKey);
+//                             boxMap.delete(boxKey);
+//                         }
+//                     }
+//                 }
+//                 return false;
+//             }
+//         }
+//     }
+//     return true;
 // }
