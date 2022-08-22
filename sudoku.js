@@ -61,48 +61,48 @@ for (let i = 0; i < 9; i++) {
 }
 
 
-async function sudokuSolver(row, col) {
-    if ((row > 8) || (col > 8)) {
-        return true;
-    }
-    let nextRow = row;
-    let nextCol = col + 1;
-    if (col === 8) {
-        nextRow = row + 1;
-        nextCol = 0;
-    }
-    if (board[row][col] !== ".") {
-        if(sudokuSolver(nextRow, nextCol)) return true;
-        return false;
-    }
-        for(let c='1'; c<='9'; c++){
-            let rowKey = `${uniqChar[row]}${c}`;
-            let colKey = `${uniqChar[col]}${c}`;
-            let boxKey = `${uniqChar[(Math.floor(row / 3) * 3 + Math.floor(col / 3))]}${c}`;
-            if (!rowMap.has(rowKey) && !colMap.has(colKey) && !boxMap.has(boxKey)) {
-                let currentClass = `.row${row}.col${col}`;
-                let currentSpan = document.querySelector(currentClass);
-                board[row][col] = `${c}`;
-                currentSpan.innerText = board[row][col];
-                // console.log("hi");
-                rowMap.set(rowKey, true);
-                colMap.set(colKey, true);
-                boxMap.set(boxKey, true);
-                // await new Promise(resolve => {setTimeout(() => {resolve()}, 100)});
-                if(sudokuSolver(nextRow, nextCol)) return true;
-                else{
-                    rowMap.delete(rowKey);
-                    colMap.delete(colKey);
-                    boxMap.delete(boxKey);
-                    board[row][col] = '.';
-                    currentSpan.innerText = board[row][col];
-                }
-            }
-        }
-        return false;
-}
+// async function sudokuSolver(row, col) {
+//     if ((row > 8) || (col > 8)) {
+//         return true;
+//     }
+//     let nextRow = row;
+//     let nextCol = col + 1;
+//     if (col === 8) {
+//         nextRow = row + 1;
+//         nextCol = 0;
+//     }
+//     if (board[row][col] !== ".") {
+//         sudokuSolver(nextRow, nextCol)
+//         return true;
+//     }
+//         for(let c='1'; c<='9'; c++){
+//             let rowKey = `${uniqChar[row]}${c}`;
+//             let colKey = `${uniqChar[col]}${c}`;
+//             let boxKey = `${uniqChar[(Math.floor(row / 3) * 3 + Math.floor(col / 3))]}${c}`;
+//             if (!rowMap.has(rowKey) && !colMap.has(colKey) && !boxMap.has(boxKey)) {
+//                 let currentClass = `.row${row}.col${col}`;
+//                 let currentSpan = document.querySelector(currentClass);
+//                 board[row][col] = `${c}`;
+//                 currentSpan.innerText = board[row][col];
+//                 // console.log("hi");
+//                 rowMap.set(rowKey, true);
+//                 colMap.set(colKey, true);
+//                 boxMap.set(boxKey, true);
+//                 await new Promise(resolve => {setTimeout(() => {resolve()}, 100)});
+//                 if(await sudokuSolver(nextRow, nextCol)) return true;
+//                 else{
+//                     rowMap.delete(rowKey);
+//                     colMap.delete(colKey);
+//                     boxMap.delete(boxKey);
+//                     board[row][col] = '.';
+//                     currentSpan.innerText = board[row][col];
+//                 }
+//             }
+//         }
+//         return false;
+// }
 
-sudokuSolver(0, 0);
+sudokuSolver2(0, 0);
 
 
 //ignore
@@ -178,37 +178,40 @@ async function sudokuSolver(row, col) {
 
 
 
-// function sudokuSolver2(){
-//     for(let row=0; row<9; row++){
-//         for(let col=0; col<9; col++){
-//             if(board[row][col] == '.'){
-//                 for(let c = '1'; c <= '9'; c++){
-//                     let rowKey = `${uniqChar[row]}${c}`;
-//                     let colKey = `${uniqChar[col]}${c}`;
-//                     let boxKey = `${uniqChar[(Math.floor(row / 3) * 3 + Math.floor(col / 3))]}${c}`;
-//                     if (!rowMap.has(rowKey) && !colMap.has(colKey) && !boxMap.has(boxKey)){
-//                         board[row][col] = c;
-//                         let currentClass = `.row${row}.col${col}`;
-//                         let currentSpan = document.querySelector(currentClass);
-//                         currentSpan.innerText = board[row][col];
-//                         rowMap.set(rowKey, true);
-//                         colMap.set(colKey, true);
-//                         boxMap.set(boxKey, true);
-//                         if(sudokuSolver2()){
-//                             return true;
-//                         }
-//                         else{
-//                             board[row][col]='.';
-//                             currentSpan.innerText = board[row][col];
-//                             rowMap.delete(rowKey);
-//                             colMap.delete(colKey);
-//                             boxMap.delete(boxKey);
-//                         }
-//                     }
-//                 }
-//                 return false;
-//             }
-//         }
-//     }
-//     return true;
-// }
+async function sudokuSolver2(){
+    for(let row=0; row<9; row++){
+        for(let col=0; col<9; col++){
+            if(board[row][col] == '.'){
+                for(let c = '1'; c <= '9'; c++){
+                    let rowKey = `${uniqChar[row]}${c}`;
+                    let colKey = `${uniqChar[col]}${c}`;
+                    let boxKey = `${uniqChar[(Math.floor(row / 3) * 3 + Math.floor(col / 3))]}${c}`;
+                    if (!rowMap.has(rowKey) && !colMap.has(colKey) && !boxMap.has(boxKey)){
+                        board[row][col] = c;
+                        let currentClass = `.row${row}.col${col}`;
+                        let currentSpan = document.querySelector(currentClass);
+                        currentSpan.innerText = board[row][col];
+                        currentSpan.style.color = "red";
+                        rowMap.set(rowKey, true);
+                        colMap.set(colKey, true);
+                        boxMap.set(boxKey, true);
+                        await new Promise((resolve) => {setTimeout(() => {resolve()}, 10)});
+                        if(await sudokuSolver2()){
+                            return true;
+                        }
+                        else{
+                            board[row][col]='.';
+                            currentSpan.innerText = board[row][col];
+                            currentSpan.style.color = "black";
+                            rowMap.delete(rowKey);
+                            colMap.delete(colKey);
+                            boxMap.delete(boxKey);
+                        }
+                    }
+                }
+                return false;
+            }
+        }
+    }
+    return true;
+}
